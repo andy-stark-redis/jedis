@@ -31,7 +31,7 @@ import redis.clients.jedis.util.RedisOutputStream;
 public class Connection implements Closeable {
 
   private ConnectionPool memberOf;
-  private RedisProtocol protocol;
+  protected RedisProtocol protocol;
   private final JedisSocketFactory socketFactory;
   private Socket socket;
   private RedisOutputStream outputStream;
@@ -55,9 +55,7 @@ public class Connection implements Closeable {
   }
 
   public Connection(final HostAndPort hostAndPort, final JedisClientConfig clientConfig) {
-    this(new DefaultJedisSocketFactory(hostAndPort, clientConfig));
-    this.infiniteSoTimeout = clientConfig.getBlockingSocketTimeoutMillis();
-    initializeFromClientConfig(clientConfig);
+    this(new DefaultJedisSocketFactory(hostAndPort, clientConfig), clientConfig);
   }
 
   public Connection(final JedisSocketFactory socketFactory) {
@@ -373,16 +371,40 @@ public class Connection implements Closeable {
     }
   }
 
+  @Experimental
+  protected Object protocolRead(RedisInputStream is) {
+    return Protocol.read(is);
+  }
+
+  @Experimental
+  protected void protocolReadPushes(RedisInputStream is) {
+  }
+
   protected Object readProtocolWithCheckingBroken() {
     if (broken) {
       throw new JedisConnectionException("Attempting to read from a broken connection.");
     }
 
     try {
-      return Protocol.read(inputStream);
-//      Object read = Protocol.read(inputStream);
-//      System.out.println(redis.clients.jedis.util.SafeEncoder.encodeObject(read));
-//      return read;
+      return protocolRead(inputStream);
+    } catch (JedisConnectionException exc) {
+      broken = true;
+      throw exc;
+    }
+  }
+
+  protected void readPushesWithCheckingBroken() {
+    if (broken) {
+      throw new JedisConnectionException("Attempting to read from a broken connection.");
+    }
+
+    try {
+      if (inputStream.available() > 0) {
+        protocolReadPushes(inputStream);
+      }
+    } catch (IOException e) {
+      broken = true;
+      throw new JedisConnectionException("Failed to check buffer on connection.", e);
     } catch (JedisConnectionException exc) {
       setBroken();
       throw exc;
@@ -404,6 +426,7 @@ public class Connection implements Closeable {
 
   /**
    * Check if the client name libname, libver, characters are legal
+   *
    * @param info the name
    * @return Returns true if legal, false throws exception
    * @throws JedisException if characters illegal
@@ -419,7 +442,7 @@ public class Connection implements Closeable {
     return true;
   }
 
-  private void initializeFromClientConfig(final JedisClientConfig config) {
+  protected void initializeFromClientConfig(final JedisClientConfig config) {
     try {
       connect();
 
@@ -447,7 +470,9 @@ public class Connection implements Closeable {
       }
 
       ClientSetInfoConfig setInfoConfig = config.getClientSetInfoConfig();
-      if (setInfoConfig == null) setInfoConfig = ClientSetInfoConfig.DEFAULT;
+      if (setInfoConfig == null) {
+        setInfoConfig = ClientSetInfoConfig.DEFAULT;
+      }
 
       if (!setInfoConfig.isDisabled()) {
         String libName = JedisMetaInfo.getArtifactId();
