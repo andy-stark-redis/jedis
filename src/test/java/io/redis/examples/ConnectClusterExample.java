@@ -1,5 +1,4 @@
 // EXAMPLE: connect_cluster
-
 // REMOVE_START
 package io.redis.examples;
 import org.junit.Assert;
@@ -20,11 +19,11 @@ public class ConnectClusterExample {
     public void run() {
         Set<HostAndPort> clusterNodeSet = new HashSet<HostAndPort>();
         
-        clusterNodeSet.add(new HostAndPort("redis-13891.c34425.eu-west-2-mz.ec2.cloud.rlrcp.com", 13891));
+        clusterNodeSet.add(new HostAndPort("<host>", <port>));
 
         JedisClientConfig config = DefaultJedisClientConfig.builder()
                 .user("default")
-                .password("wtpet4pI5EgyJHyldPwR7xM7GaZB0EcG")
+                .password("<password>")
                 .build();
 
         JedisCluster jedis = new JedisCluster(

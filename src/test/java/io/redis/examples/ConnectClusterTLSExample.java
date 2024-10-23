@@ -1,13 +1,11 @@
-// EXAMPLE: connect_basic
-
+// EXAMPLE: connect_cluster_tls
 // REMOVE_START
 package io.redis.examples;
 import org.junit.Assert;
 import org.junit.Test;
 // REMOVE_END
 
-// STEP_START connect_basic
-import redis.clients.jedis.UnifiedJedis;
+// STEP_START connect_cluster_tls
 import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisClientConfig;
@@ -39,24 +37,28 @@ public class ConnectClusterTLSExample {
         return sslContext.getSocketFactory();
     }
 
+    //  Use the keytool command to convert the PEM file to JKS format:
+    //    keytool -importcert -keystore truststore.jks \ 
+    //      -storepass REPLACE_WITH_YOUR_PASSWORD \
+    //      -file redis_ca.pem
     @Test
     public void run() {
         try {
             SSLSocketFactory sslFactory = createSslSocketFactory(
-                "/Users/andrew.stark/Documents/Repos/forks/jedis/src/test/java/io/redis/examples/truststore.jks",
-                "secret" // use the password you specified for keytool command
+                "<path_to_truststore.jks_file>",
+                "<password_for_truststore.jks_file>"
             );
 
             JedisClientConfig config = DefaultJedisClientConfig.builder()
                 .user("default")
-                .password("d8gzw2azTFVSh0tTPDsvuzc2BDC1dOQN")
+                .password("<password>")
                 .ssl(true)
                 .sslSocketFactory(sslFactory)
                 .build();
 
             Set<HostAndPort> clusterNodeSet = new HashSet<HostAndPort>();
         
-            clusterNodeSet.add(new HostAndPort("redis-18141.c34428.eu-west-2-mz.ec2.cloud.rlrcp.com", 18141));
+            clusterNodeSet.add(new HostAndPort("<host>", <port>));
 
             JedisCluster jedis = new JedisCluster(
                 clusterNodeSet,

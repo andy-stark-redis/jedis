@@ -1,11 +1,9 @@
 // EXAMPLE: connect_basic
-
 // REMOVE_START
 package io.redis.examples;
 import org.junit.Assert;
 import org.junit.Test;
 // REMOVE_END
-
 // STEP_START connect_basic
 import redis.clients.jedis.UnifiedJedis;
 import redis.clients.jedis.DefaultJedisClientConfig;
@@ -36,23 +34,27 @@ public class ConnectBasicTLSExample {
         return sslContext.getSocketFactory();
     }
 
+    //  Use the keytool command to convert the PEM file to JKS format:
+    //    keytool -importcert -keystore truststore.jks \ 
+    //      -storepass REPLACE_WITH_YOUR_PASSWORD \
+    //      -file redis_ca.pem
     @Test
     public void run() {
         try {
             SSLSocketFactory sslFactory = createSslSocketFactory(
-                "/Users/andrew.stark/Documents/Repos/forks/jedis/src/test/java/io/redis/examples/truststore.jks",
-                "secret" // use the password you specified for keytool command
+                "<path_to_truststore.jks_file>",
+                "<password_for_truststore.jks_file>"
             );
 
             JedisClientConfig config = DefaultJedisClientConfig.builder()
                 .user("default")
-                .password("jj7hRGi1K22vop5IDFvAf8oyeeF98s4h")
+                .password("<password>")
                 .ssl(true)
                 .sslSocketFactory(sslFactory)
                 .build();
 
             UnifiedJedis jedis = new UnifiedJedis(
-                new HostAndPort("redis-14669.c338.eu-west-2-1.ec2.redns.redis-cloud.com", 14669),
+                new HostAndPort("<host>", <port>),
                 config
             );
             // REMOVE_START

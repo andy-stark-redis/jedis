@@ -15,11 +15,11 @@ public class ConnectBasicExample {
     public void run() {
         JedisClientConfig config = DefaultJedisClientConfig.builder()
                 .user("default")
-                .password("jj7hRGi1K22vop5IDFvAf8oyeeF98s4h")
+                .password("<password>")
                 .build();
 
         UnifiedJedis jedis = new UnifiedJedis(
-            new HostAndPort("redis-14669.c338.eu-west-2-1.ec2.redns.redis-cloud.com", 14669),
+            new HostAndPort("<host>", <port>),
             config
         );
         // REMOVE_START
