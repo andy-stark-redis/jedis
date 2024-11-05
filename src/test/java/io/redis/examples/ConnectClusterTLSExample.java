@@ -4,7 +4,6 @@ package io.redis.examples;
 import org.junit.Assert;
 import org.junit.Test;
 // REMOVE_END
-
 // STEP_START connect_cluster_tls
 import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.HostAndPort;

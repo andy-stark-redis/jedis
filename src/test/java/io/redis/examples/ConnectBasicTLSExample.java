@@ -1,10 +1,10 @@
-// EXAMPLE: connect_basic
+// EXAMPLE: connect_basic_tls
 // REMOVE_START
 package io.redis.examples;
 import org.junit.Assert;
 import org.junit.Test;
 // REMOVE_END
-// STEP_START connect_basic
+// STEP_START connect_basic_tls
 import redis.clients.jedis.UnifiedJedis;
 import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.HostAndPort;

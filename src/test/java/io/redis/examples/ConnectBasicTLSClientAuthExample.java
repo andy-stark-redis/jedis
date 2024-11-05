@@ -4,7 +4,6 @@ package io.redis.examples;
 import org.junit.Assert;
 import org.junit.Test;
 // REMOVE_END
-
 // STEP_START connect_basic_tls_client_auth
 import redis.clients.jedis.*;
 import javax.net.ssl.*;
